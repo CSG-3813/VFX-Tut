@@ -10,6 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class Weather : MonoBehaviour
 {
@@ -18,6 +20,11 @@ public class Weather : MonoBehaviour
     public float rainTime = 10;
     public AudioMixerSnapshot Raining;
     public AudioMixerSnapshot Sunny;
+    public Volume postProcess;
+
+    float lerpValue;
+    float lerpDuration = 10;
+    float transtionTime;
     float timerTime;
     bool startTimer;
     AudioSource audioSrc;
@@ -29,6 +36,7 @@ public class Weather : MonoBehaviour
     {
         rainPS = rainGO.GetComponent<ParticleSystem>();
         audioSrc= rainGO.GetComponent<AudioSource>();
+        
 
     }
 
@@ -40,7 +48,8 @@ public class Weather : MonoBehaviour
             if (timerTime > 0)
             {
                 timerTime -= Time.deltaTime;
-              //  Debug.Log(timerTime);
+                TintSky();
+
             }else{
                 EndRain();
             } //end if (timeRemaining > 0)
@@ -67,6 +76,20 @@ public class Weather : MonoBehaviour
 
         }//end if(other.tag == "Player")
     }//end OnTriggerEnter()
+
+    void TintSky()
+    {
+        
+        if (transtionTime < lerpDuration)
+        {
+            lerpValue = Mathf.Lerp(0, 1, transtionTime / lerpDuration);
+            Debug.Log(lerpValue);
+            transtionTime += Time.deltaTime;
+            postProcess.weight = lerpValue;
+
+        }
+
+    }//end TintSky()
 
     void EndRain()
     {
